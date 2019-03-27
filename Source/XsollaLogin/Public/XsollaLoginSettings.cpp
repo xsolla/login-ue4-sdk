@@ -6,4 +6,5 @@
 UXsollaLoginSettings::UXsollaLoginSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	UserDataStorage = EUserDataStorage::Xsolla;
 }

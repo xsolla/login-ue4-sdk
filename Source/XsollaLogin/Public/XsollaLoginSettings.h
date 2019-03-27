@@ -5,6 +5,17 @@
 
 #include "XsollaLoginSettings.generated.h"
 
+/** You can store user data at Xsolla's side, which is the default option, or in your own storage. */
+UENUM()
+enum class EUserDataStorage : uint8
+{
+	/** User data is stored at Xsolla's side */
+	Xsolla UMETA(DisplayName = "Xsolla storage"),
+
+	/** If the user data is stored on your side, proxy requests are used. */
+	Custom UMETA(DisplayName = "Custom storage"),
+};
+
 UCLASS(config = Engine, defaultconfig)
 class XSOLLALOGIN_API UXsollaLoginSettings : public UObject
 {
@@ -22,5 +33,9 @@ public:
 	 * Required if there are several Callback URLs.
 	 */
 	UPROPERTY(Config, EditAnywhere)
-	FString LoginURL;
+	FString CallbackURL;
+
+	/** API methods will be calling different URLs depending on the selected storage method. */
+	UPROPERTY(Config, EditAnywhere)
+	EUserDataStorage UserDataStorage;
 };
