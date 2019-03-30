@@ -8,7 +8,7 @@
 #include "XsollaLoginController.generated.h"
 
 DECLARE_DELEGATE(FOnAuthCompleted);
-DECLARE_DELEGATE_TwoParams(FOnAuthError, const FString& /* code */, const FString& /* description */);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAuthError, const FString&, Code, const FString&, Description);
 DECLARE_DELEGATE_OneParam(FOnRegisteredNewUser, const FString& /** @TODO AuthData should be here */);
 
 UCLASS()
@@ -24,8 +24,8 @@ public:
 	 * @param Password Password. Required.
 	 * @param Email Email. Required.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void RegistrateUser(const FString& Username, const FString& Password, const FString& Email);
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "ErrorCallback"))
+	void RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FOnAuthError& ErrorCallback);
 	
 	/**
 	 * Authenticates the user by the username and password specified.
@@ -46,7 +46,7 @@ public:
 	void ResetUserPassword(const FString& Username);
 	
 protected:
-	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded);
+	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback);
 	
 protected:
 	static const FString RegistrationEndpoint;

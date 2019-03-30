@@ -20,7 +20,7 @@ UXsollaLoginController::UXsollaLoginController(const FObjectInitializer& ObjectI
 /**
  * POST https://login.xsolla.com/api/user?projectId={projectId}&login_url={login_url}
  */
-void UXsollaLoginController::RegistrateUser(const FString& Username, const FString& Password, const FString& Email)
+void UXsollaLoginController::RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
@@ -42,7 +42,7 @@ void UXsollaLoginController::RegistrateUser(const FString& Username, const FStri
 	
 	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
 	
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::Default_HttpRequestComplete);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::Default_HttpRequestComplete, const_cast<FOnAuthError&>(ErrorCallback));
 	
 	HttpRequest->SetURL(Url);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
@@ -74,7 +74,7 @@ void UXsollaLoginController::AuthenticateUser(const FString& Username, const FSt
 	
 	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
 	
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::Default_HttpRequestComplete);
+	//HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::Default_HttpRequestComplete);
 	
 	HttpRequest->SetURL(Url);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
@@ -89,7 +89,7 @@ void UXsollaLoginController::ResetUserPassword(const FString& Username)
 	UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Not implemented yet"), *VA_FUNC_LINE);
 }
 
-void UXsollaLoginController::Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded)
+void UXsollaLoginController::Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback)
 {
 	FString ResponseStr, ErrorStr;
 	
