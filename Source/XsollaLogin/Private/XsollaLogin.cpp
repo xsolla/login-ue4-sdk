@@ -3,6 +3,7 @@
 
 #include "XsollaLogin.h"
 
+#include "XsollaLoginController.h"
 #include "XsollaLoginDefines.h"
 #include "XsollaLoginSettings.h"
 
@@ -24,6 +25,11 @@ void FXsollaLoginModule::StartupModule()
 			LOCTEXT("RuntimeSettingsDescription", "Configure Xsolla Login SDK"),
 			XsollaLoginSettings);
 	}
+	
+	// Create login data controller
+	XsollaLoginController = NewObject<UXsollaLoginController>(GetTransientPackage());
+	XsollaLoginController->SetFlags(RF_Standalone);
+	XsollaLoginController->AddToRoot();
 
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: XsollaLogin module started"), *VA_FUNC_LINE);
 }
@@ -39,10 +45,12 @@ void FXsollaLoginModule::ShutdownModule()
 	{
 		// If we're in exit purge, this object has already been destroyed
 		XsollaLoginSettings->RemoveFromRoot();
+		XsollaLoginController->RemoveFromRoot();
 	}
 	else
 	{
 		XsollaLoginSettings = nullptr;
+		XsollaLoginController = nullptr;
 	}
 }
 
@@ -50,6 +58,12 @@ UXsollaLoginSettings* FXsollaLoginModule::GetSettings() const
 {
 	check(XsollaLoginSettings);
 	return XsollaLoginSettings;
+}
+
+UXsollaLoginController* FXsollaLoginModule::GetLoginController() const
+{
+	check(XsollaLoginController);
+	return XsollaLoginController;
 }
 
 #undef LOCTEXT_NAMESPACE
