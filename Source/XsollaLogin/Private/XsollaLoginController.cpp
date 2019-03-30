@@ -91,5 +91,34 @@ void UXsollaLoginController::ResetUserPassword(const FString& Username)
 
 void UXsollaLoginController::Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded)
 {
-	UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Not implemented yet"), *VA_FUNC_LINE);
+	FString ResponseStr, ErrorStr;
+	
+	if (bSucceeded && HttpResponse.IsValid())
+	{
+		ResponseStr = HttpResponse->GetContentAsString();
+		
+		if (EHttpResponseCodes::IsOk(HttpResponse->GetResponseCode()))
+		{
+			UE_LOG(LogXsollaLogin, Warning, TEXT("%s: THE ANSWER IS %s"), *VA_FUNC_LINE, *ResponseStr);
+			
+			// @TODO Process answer based on endpoint
+		}
+		else
+		{
+			ErrorStr = FString::Printf(TEXT("Invalid response. code=%d error=%s"), HttpResponse->GetResponseCode(), *ResponseStr);
+			
+			// @TODO Process common error
+			// {"error":{"code":"003-003","description":"The username is already taken"}}
+			
+		}
+	}
+	else
+	{
+		ErrorStr = TEXT("No response");
+	}
+	
+	if (!ErrorStr.IsEmpty())
+	{
+		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: request failed. %s"), *VA_FUNC_LINE, *ErrorStr);
+	}
 }

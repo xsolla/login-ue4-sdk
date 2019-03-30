@@ -8,7 +8,7 @@
 #include "XsollaLoginController.generated.h"
 
 DECLARE_DELEGATE(FOnAuthCompleted);
-DECLARE_DELEGATE(FOnAuthError);
+DECLARE_DELEGATE_TwoParams(FOnAuthError, const FString& /* code */, const FString& /* description */);
 DECLARE_DELEGATE_OneParam(FOnRegisteredNewUser, const FString& /** @TODO AuthData should be here */);
 
 UCLASS()
