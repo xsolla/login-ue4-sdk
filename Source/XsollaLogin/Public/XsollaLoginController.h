@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "Http.h"
+
 #include "XsollaLoginController.generated.h"
 
 DECLARE_DELEGATE(FOnAuthCompleted);
@@ -42,4 +44,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
 	void ResetUserPassword(const FString& Username);
+	
+protected:
+	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded);
+	
+protected:
+	static const FString RegistrationEndpoint;
+	static const FString LoginEndpoint;
+	static const FString ResetPasswordEndpoint;
+	
 };
