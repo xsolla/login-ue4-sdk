@@ -10,21 +10,6 @@ UXsollaLoginLibrary::UXsollaLoginLibrary(const FObjectInitializer& ObjectInitial
 {
 }
 
-void UXsollaLoginLibrary::RegistrateUser(const FString& Username, const FString& Password, const FString& Email)
-{
-	
-}
-
-void UXsollaLoginLibrary::AuthenticateUser(const FString& Username, const FString& Password, bool bRememberMe)
-{
-	
-}
-
-void UXsollaLoginLibrary::ResetUserPassword(const FString& Username)
-{
-	
-}
-
 UXsollaLoginController* UXsollaLoginLibrary::GetLoginController()
 {
 	return FXsollaLoginModule::Get().GetLoginController();
