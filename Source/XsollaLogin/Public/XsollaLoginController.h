@@ -7,9 +7,8 @@
 
 #include "XsollaLoginController.generated.h"
 
-DECLARE_DELEGATE(FOnAuthCompleted);
+DECLARE_DYNAMIC_DELEGATE(FOnAuthCompleted);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAuthError, const FString&, Code, const FString&, Description);
-DECLARE_DELEGATE_OneParam(FOnRegisteredNewUser, const FString& /** @TODO AuthData should be here */);
 
 UCLASS()
 class XSOLLALOGIN_API UXsollaLoginController : public UObject
