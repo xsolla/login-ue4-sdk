@@ -25,7 +25,7 @@ void FXsollaLoginModule::StartupModule()
 			LOCTEXT("RuntimeSettingsDescription", "Configure Xsolla Login SDK"),
 			XsollaLoginSettings);
 	}
-	
+
 	// Create login data controller
 	XsollaLoginController = NewObject<UXsollaLoginController>(GetTransientPackage());
 	XsollaLoginController->SetFlags(RF_Standalone);
