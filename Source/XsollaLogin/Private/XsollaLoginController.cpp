@@ -11,7 +11,7 @@
 
 const FString UXsollaLoginController::RegistrationEndpoint(TEXT("https://login.xsolla.com/api/user"));
 const FString UXsollaLoginController::LoginEndpoint(TEXT("https://login.xsolla.com/api/login"));
-const FString UXsollaLoginController::ResetPasswordEndpoint(TEXT("https://login.xsolla.com/api/password/reset"));
+const FString UXsollaLoginController::ResetPasswordEndpoint(TEXT("https://login.xsolla.com/api/password/reset/request"));
 
 UXsollaLoginController::UXsollaLoginController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -21,7 +21,7 @@ UXsollaLoginController::UXsollaLoginController(const FObjectInitializer& ObjectI
 /**
  * POST https://login.xsolla.com/api/user?projectId={projectId}&login_url={login_url}
  */
-void UXsollaLoginController::RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FOnAuthError& ErrorCallback)
+void UXsollaLoginController::RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
@@ -43,7 +43,7 @@ void UXsollaLoginController::RegistrateUser(const FString& Username, const FStri
 
 	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
 
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::Default_HttpRequestComplete, ErrorCallback);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
 
 	HttpRequest->SetURL(Url);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
@@ -53,7 +53,10 @@ void UXsollaLoginController::RegistrateUser(const FString& Username, const FStri
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginController::AuthenticateUser(const FString& Username, const FString& Password, const FOnAuthError& ErrorCallback, bool bRememberMe)
+/**
+ * POST https://login.xsolla.com/api/login?projectId={projectId}&login_url={login_url}
+ */
+void UXsollaLoginController::AuthenticateUser(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, bool bRememberMe)
 {
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
@@ -75,7 +78,7 @@ void UXsollaLoginController::AuthenticateUser(const FString& Username, const FSt
 
 	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
 
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::Default_HttpRequestComplete, ErrorCallback);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::AuthUpdated_HttpRequestComplete, SuccessCallback, ErrorCallback);
 
 	HttpRequest->SetURL(Url);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
@@ -85,27 +88,50 @@ void UXsollaLoginController::AuthenticateUser(const FString& Username, const FSt
 	HttpRequest->ProcessRequest();
 }
 
-void UXsollaLoginController::ResetUserPassword(const FString& Username, const FOnAuthError& ErrorCallback)
+/**
+ * POST https://login.xsolla.com/api/password/reset/request?projectId={projectId}&login_url={login_url}
+ */
+void UXsollaLoginController::ResetUserPassword(const FString& Username, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Not implemented yet"), *VA_FUNC_LINE);
 }
 
-void UXsollaLoginController::Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback)
+void UXsollaLoginController::Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
 {
-	FString ResponseStr, ErrorStr;
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaLogin, Warning, TEXT("%s: THE ANSWER IS %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	SuccessCallback.ExecuteIfBound();
+}
+
+void UXsollaLoginController::AuthUpdated_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+
+	FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaLogin, Warning, TEXT("%s: THE ANSWER IS %s"), *VA_FUNC_LINE, *ResponseStr);
+
+	// @TODO Fill auth data and parse token https://github.com/xsolla/login-ue4-sdk/issues/15
+	SuccessCallback.ExecuteIfBound(FXsollaLoginData());
+}
+
+bool UXsollaLoginController::HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback)
+{
+	FString ErrorStr;
 
 	if (bSucceeded && HttpResponse.IsValid())
 	{
-		ResponseStr = HttpResponse->GetContentAsString();
-
-		if (EHttpResponseCodes::IsOk(HttpResponse->GetResponseCode()))
+		if (!EHttpResponseCodes::IsOk(HttpResponse->GetResponseCode()))
 		{
-			UE_LOG(LogXsollaLogin, Warning, TEXT("%s: THE ANSWER IS %s"), *VA_FUNC_LINE, *ResponseStr);
-
-			// @TODO Process answer based on endpoint
-		}
-		else
-		{
+			FString ResponseStr = HttpResponse->GetContentAsString();
 			ErrorStr = FString::Printf(TEXT("Invalid response. code=%d error=%s"), HttpResponse->GetResponseCode(), *ResponseStr);
 
 			// Example: {"error":{"code":"003-003","description":"The username is already taken"}}
@@ -141,5 +167,8 @@ void UXsollaLoginController::Default_HttpRequestComplete(FHttpRequestPtr HttpReq
 	if (!ErrorStr.IsEmpty())
 	{
 		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: request failed. %s"), *VA_FUNC_LINE, *ErrorStr);
+		return true;
 	}
+
+	return false;
 }
