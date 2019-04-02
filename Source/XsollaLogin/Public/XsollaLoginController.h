@@ -26,7 +26,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "ErrorCallback"))
 	void RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FOnAuthError& ErrorCallback);
-	
+
 	/**
 	 * Authenticates the user by the username and password specified.
 	 *
@@ -34,23 +34,22 @@ public:
 	 * @param Password Password. Required.
 	 * @param bRememberMe Whether the user agrees to save the authentication data. Default is 'false'.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void AuthenticateUser(const FString& Username, const FString& Password, bool bRememberMe = false);
-	
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "ErrorCallback"))
+	void AuthenticateUser(const FString& Username, const FString& Password, const FOnAuthError& ErrorCallback, bool bRememberMe = false);
+
 	/**
 	 * Resets the user's password.
 	 *
 	 * @param Username Username. Required.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
-	void ResetUserPassword(const FString& Username);
-	
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "ErrorCallback"))
+	void ResetUserPassword(const FString& Username, const FOnAuthError& ErrorCallback);
+
 protected:
-	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError& ErrorCallback);
-	
+	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback);
+
 protected:
 	static const FString RegistrationEndpoint;
 	static const FString LoginEndpoint;
 	static const FString ResetPasswordEndpoint;
-	
 };
