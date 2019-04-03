@@ -1,0 +1,5 @@
+{
+    "login": {
+        "secret" : "<YOUR_LOGIN_MODULE_SECRET_KEY>"
+    }
+}
