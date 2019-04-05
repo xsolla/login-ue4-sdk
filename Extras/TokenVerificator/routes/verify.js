@@ -17,9 +17,15 @@ router.post('/', function(req, res, next) {
         console.log(decoded);
 
         res.statusCode = 200;
-        res.write('{"token_payload" : ');
-        res.write(JSON.stringify(decoded));
-        res.write('}');
+
+        if(global.gConfig.login.dump_payload) {
+            res.write('{"token_payload" : ');
+            res.write(JSON.stringify(decoded));
+            res.write('}');
+        }
+        else {
+            res.write('{"verified" : true}');
+        }
 
     } catch(err) {
         console.log(err);
