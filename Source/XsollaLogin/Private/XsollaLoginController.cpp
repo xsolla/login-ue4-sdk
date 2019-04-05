@@ -8,6 +8,7 @@
 #include "XsollaLoginSettings.h"
 
 #include "Json.h"
+#include "Kismet/GameplayStatics.h"
 
 const FString UXsollaLoginController::RegistrationEndpoint(TEXT("https://login.xsolla.com/api/user"));
 const FString UXsollaLoginController::LoginEndpoint(TEXT("https://login.xsolla.com/api/login"));
@@ -180,21 +181,15 @@ void UXsollaLoginController::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpR
 		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
 			FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
-			
-			if(FParse::Value(*LoginUrl, TEXT("token="), LoginData.AuthToken.JWT))
-			{
-				FParse::Bool(*LoginUrl, TEXT("remember_me="), LoginData.bRememberMe);
 
-				UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received token: %s"), *VA_FUNC_LINE, *LoginData.AuthToken.JWT);
+			LoginData.AuthToken.JWT = UGameplayStatics::ParseOption(LoginUrl, TEXT("token"));
+			LoginData.bRememberMe = UGameplayStatics::ParseOption(LoginUrl, TEXT("remember_me")).ToBool();
 
-				// Start verification process now
-				ValidateToken(SuccessCallback, ErrorCallback);
-				return;
-			}
-			else
-			{
-				ErrorStr = FString::Printf(TEXT("No token found in login url: %s"), *LoginUrl);
-			}
+			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received token: %s"), *VA_FUNC_LINE, *LoginData.AuthToken.JWT);
+
+			// Start verification process now
+			ValidateToken(SuccessCallback, ErrorCallback);
+			return;
 		}
 		else
 		{
