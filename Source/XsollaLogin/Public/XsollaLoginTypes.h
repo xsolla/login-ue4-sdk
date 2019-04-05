@@ -10,12 +10,17 @@ struct FXsollaAuthToken
 {
 	GENERATED_BODY()
 
-public:
 	/** A JWT signed by the secret key is generated for each successfully authenticated user. */
-	UPROPERTY(BlueprintReadWrite)
-	FString AccessToken;
+	UPROPERTY(BlueprintReadOnly)
+	FString JWT;
+	
+	/** Token validation status. */
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsValidated;
 
-	FXsollaAuthToken() {}
+	FXsollaAuthToken()
+		: bIsValidated(false)
+	{}
 };
 
 USTRUCT(BlueprintType)
@@ -23,7 +28,16 @@ struct FXsollaLoginData
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 	FXsollaAuthToken AuthToken;
+	
+	UPROPERTY(BlueprintReadOnly)
+	FString Username;
+	
+	UPROPERTY(BlueprintReadOnly)
+	bool bRememberMe;
+	
+	FXsollaLoginData()
+		: bRememberMe(false)
+	{}
 };

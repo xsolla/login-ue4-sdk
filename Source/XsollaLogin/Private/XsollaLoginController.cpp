@@ -56,6 +56,11 @@ void UXsollaLoginController::RegistrateUser(const FString& Username, const FStri
 
 void UXsollaLoginController::AuthenticateUser(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, bool bRememberMe)
 {
+	// Be sure we've dropped any saved info
+	LoginData = FXsollaLoginData();
+	LoginData.Username = Username;
+	LoginData.bRememberMe = bRememberMe;
+	
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	RequestDataJson->SetStringField(TEXT("username"), Username);
@@ -88,6 +93,36 @@ void UXsollaLoginController::AuthenticateUser(const FString& Username, const FSt
 
 void UXsollaLoginController::ResetUserPassword(const FString& Username, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	RequestDataJson->SetStringField(TEXT("username"), Username);
+	
+	FString PostContent;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+	
+	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? ResetPasswordEndpoint : ProxyResetPasswordEndpoint;
+	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
+										*Endpoint,
+										*Settings->ProjectId,
+										*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
+	
+	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
+	
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	
+	HttpRequest->SetURL(Url);
+	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	HttpRequest->SetVerb(TEXT("POST"));
+	HttpRequest->SetContentAsString(PostContent);
+	
+	HttpRequest->ProcessRequest();
+}
+
+void UXsollaLoginController::ValidateToken(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
+{
 	UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Not implemented yet"), *VA_FUNC_LINE);
 }
 
@@ -99,7 +134,7 @@ void UXsollaLoginController::Default_HttpRequestComplete(FHttpRequestPtr HttpReq
 	}
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaLogin, Warning, TEXT("%s: THE ANSWER IS %s"), *VA_FUNC_LINE, *ResponseStr);
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
 	SuccessCallback.ExecuteIfBound();
 }
@@ -110,12 +145,48 @@ void UXsollaLoginController::AuthUpdated_HttpRequestComplete(FHttpRequestPtr Htt
 	{
 		return;
 	}
+	
+	FString ErrorStr;
+	static const FString ErrorCode = TEXT("204");
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaLogin, Warning, TEXT("%s: THE ANSWER IS %s"), *VA_FUNC_LINE, *ResponseStr);
-
-	// @TODO Fill auth data and parse token https://github.com/xsolla/login-ue4-sdk/issues/15
-	SuccessCallback.ExecuteIfBound(FXsollaLoginData());
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+	
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ResponseStr);
+	if (FJsonSerializer::Deserialize(Reader, JsonObject))
+	{
+		static const FString LoginUrlFieldName = TEXT("login_url");
+		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
+		{
+			FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
+			
+			if(FParse::Value(*LoginUrl, TEXT("token="), LoginData.AuthToken.JWT))
+			{
+				FParse::Bool(*LoginUrl, TEXT("remember_me="), LoginData.bRememberMe);
+				
+				UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received token: %s"), *VA_FUNC_LINE, *LoginData.AuthToken.JWT);
+				
+				// @TODO Start verification process now
+				SuccessCallback.ExecuteIfBound(LoginData);
+			}
+			else
+			{
+				ErrorStr = FString::Printf(TEXT("No token found in login url: %s"), *LoginUrl);
+			}
+		}
+		else
+		{
+			ErrorStr = FString::Printf(TEXT("Can't process response json: no field '%s' found"), *LoginUrlFieldName);
+		}
+	}
+	else
+	{
+		ErrorStr = FString::Printf(TEXT("Can't deserialize response json: "), *ResponseStr);
+	}
+	
+	// No success before so call the error callback
+	ErrorCallback.ExecuteIfBound(ErrorCode, ErrorStr);
 }
 
 bool UXsollaLoginController::HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback)
@@ -168,4 +239,14 @@ bool UXsollaLoginController::HandleRequestError(FHttpRequestPtr HttpRequest, FHt
 	}
 
 	return false;
+}
+
+FXsollaLoginData UXsollaLoginController::GetLoginData()
+{
+	return LoginData;
+}
+
+void UXsollaLoginController::DropLoginData()
+{
+	LoginData = FXsollaLoginData();
 }

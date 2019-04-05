@@ -48,6 +48,10 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
 	void ResetUserPassword(const FString& Username, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback);
+	
+	/** Internal request for token validation (called with each auth update automatically) */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", meta = (AutoCreateRefTerm = "SuccessCallback, ErrorCallback"))
+	void ValidateToken(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback);
 
 protected:
 	void Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback);
@@ -55,6 +59,19 @@ protected:
 
 	/** Return true if error is happened */
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback);
+	
+public:
+	/** Get user login state data */
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Login")
+	FXsollaLoginData GetLoginData();
+	
+	/** Drop cache and cleanup login data */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	void DropLoginData();
+	
+protected:
+	/** Keeps state of user login */
+	FXsollaLoginData LoginData;
 
 protected:
 	static const FString RegistrationEndpoint;
