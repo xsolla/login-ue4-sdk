@@ -14,12 +14,12 @@ struct FXsollaAuthToken
 	UPROPERTY(BlueprintReadOnly)
 	FString JWT;
 	
-	/** Token validation status. */
+	/** Token verification status. */
 	UPROPERTY(BlueprintReadOnly)
-	bool bIsValidated;
+	bool bIsVerified;
 
 	FXsollaAuthToken()
-		: bIsValidated(false)
+		: bIsVerified(false)
 	{}
 };
 

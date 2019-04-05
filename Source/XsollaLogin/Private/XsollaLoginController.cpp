@@ -10,6 +10,8 @@
 #include "Json.h"
 #include "Kismet/GameplayStatics.h"
 
+#define LOCTEXT_NAMESPACE "FXsollaLoginModule"
+
 const FString UXsollaLoginController::RegistrationEndpoint(TEXT("https://login.xsolla.com/api/user"));
 const FString UXsollaLoginController::LoginEndpoint(TEXT("https://login.xsolla.com/api/login"));
 const FString UXsollaLoginController::ResetPasswordEndpoint(TEXT("https://login.xsolla.com/api/password/reset/request"));
@@ -181,9 +183,10 @@ void UXsollaLoginController::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpR
 		if (JsonObject->HasTypedField<EJson::String>(LoginUrlFieldName))
 		{
 			FString LoginUrl = JsonObject.Get()->GetStringField(LoginUrlFieldName);
+			FString UrlOptions = LoginUrl.RightChop(LoginUrl.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
 
-			LoginData.AuthToken.JWT = UGameplayStatics::ParseOption(LoginUrl, TEXT("token"));
-			LoginData.bRememberMe = UGameplayStatics::ParseOption(LoginUrl, TEXT("remember_me")).ToBool();
+			LoginData.AuthToken.JWT = UGameplayStatics::ParseOption(UrlOptions, TEXT("token"));
+			LoginData.bRememberMe = UGameplayStatics::ParseOption(UrlOptions, TEXT("remember_me")).ToBool();
 
 			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received token: %s"), *VA_FUNC_LINE, *LoginData.AuthToken.JWT);
 
@@ -215,6 +218,9 @@ void UXsollaLoginController::TokenVerify_HttpRequestComplete(FHttpRequestPtr Htt
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 	
+	// If no error happend so token is verified now
+	LoginData.AuthToken.bIsVerified = true;
+
 	SuccessCallback.ExecuteIfBound(LoginData);
 }
 
@@ -222,13 +228,12 @@ bool UXsollaLoginController::HandleRequestError(FHttpRequestPtr HttpRequest, FHt
 {
 	FString ErrorStr;
 	FString ErrorCode = TEXT("204");
+	FString ResponseStr = HttpResponse->GetContentAsString();
 
 	if (bSucceeded && HttpResponse.IsValid())
 	{
 		if (!EHttpResponseCodes::IsOk(HttpResponse->GetResponseCode()))
 		{
-			FString ResponseStr = HttpResponse->GetContentAsString();
-
 			ErrorCode = FString::Printf(TEXT("%d"), HttpResponse->GetResponseCode());
 			ErrorStr = FString::Printf(TEXT("Invalid response. code=%d error=%s"), HttpResponse->GetResponseCode(), *ResponseStr);
 
@@ -262,7 +267,7 @@ bool UXsollaLoginController::HandleRequestError(FHttpRequestPtr HttpRequest, FHt
 
 	if (!ErrorStr.IsEmpty())
 	{
-		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: request failed. %s"), *VA_FUNC_LINE, *ErrorStr);
+		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: request failed (%s): %s"), *VA_FUNC_LINE, *ErrorStr, *ResponseStr);
 		ErrorCallback.ExecuteIfBound(ErrorCode, ErrorStr);
 		return true;
 	}
@@ -279,3 +284,5 @@ void UXsollaLoginController::DropLoginData()
 {
 	LoginData = FXsollaLoginData();
 }
+
+#undef LOCTEXT_NAMESPACE
