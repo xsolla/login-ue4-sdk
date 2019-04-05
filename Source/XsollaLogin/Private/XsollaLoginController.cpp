@@ -13,14 +13,15 @@ const FString UXsollaLoginController::RegistrationEndpoint(TEXT("https://login.x
 const FString UXsollaLoginController::LoginEndpoint(TEXT("https://login.xsolla.com/api/login"));
 const FString UXsollaLoginController::ResetPasswordEndpoint(TEXT("https://login.xsolla.com/api/password/reset/request"));
 
+const FString UXsollaLoginController::ProxyRegistrationEndpoint(TEXT("https://login.xsolla.com/api/proxy/registration"));
+const FString UXsollaLoginController::ProxyLoginEndpoint(TEXT("https://login.xsolla.com/api/proxy/login"));
+const FString UXsollaLoginController::ProxyResetPasswordEndpoint(TEXT("https://login.xsolla.com/api/proxy/password/reset"));
+
 UXsollaLoginController::UXsollaLoginController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 }
 
-/**
- * POST https://login.xsolla.com/api/user?projectId={projectId}&login_url={login_url}
- */
 void UXsollaLoginController::RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
@@ -35,7 +36,7 @@ void UXsollaLoginController::RegistrateUser(const FString& Username, const FStri
 
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : "";
+	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
 	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
 		*Endpoint,
 		*Settings->ProjectId,
@@ -53,9 +54,6 @@ void UXsollaLoginController::RegistrateUser(const FString& Username, const FStri
 	HttpRequest->ProcessRequest();
 }
 
-/**
- * POST https://login.xsolla.com/api/login?projectId={projectId}&login_url={login_url}
- */
 void UXsollaLoginController::AuthenticateUser(const FString& Username, const FString& Password, const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback, bool bRememberMe)
 {
 	// Prepare request payload
@@ -70,7 +68,7 @@ void UXsollaLoginController::AuthenticateUser(const FString& Username, const FSt
 
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
-	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? LoginEndpoint : "";
+	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? LoginEndpoint : ProxyLoginEndpoint;
 	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
 		*Endpoint,
 		*Settings->ProjectId,
@@ -88,9 +86,6 @@ void UXsollaLoginController::AuthenticateUser(const FString& Username, const FSt
 	HttpRequest->ProcessRequest();
 }
 
-/**
- * POST https://login.xsolla.com/api/password/reset/request?projectId={projectId}&login_url={login_url}
- */
 void UXsollaLoginController::ResetUserPassword(const FString& Username, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Not implemented yet"), *VA_FUNC_LINE);

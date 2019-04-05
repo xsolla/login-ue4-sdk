@@ -60,4 +60,8 @@ protected:
 	static const FString RegistrationEndpoint;
 	static const FString LoginEndpoint;
 	static const FString ResetPasswordEndpoint;
+
+	static const FString ProxyRegistrationEndpoint;
+	static const FString ProxyLoginEndpoint;
+	static const FString ProxyResetPasswordEndpoint;
 };
