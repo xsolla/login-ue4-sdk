@@ -189,6 +189,7 @@ void UXsollaLoginController::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpR
 
 				// Start verification process now
 				ValidateToken(SuccessCallback, ErrorCallback);
+				return;
 			}
 			else
 			{
