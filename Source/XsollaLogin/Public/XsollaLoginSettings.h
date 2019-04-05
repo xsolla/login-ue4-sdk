@@ -38,4 +38,12 @@ public:
 	/** API methods will be calling different URLs depending on the selected storage method. */
 	UPROPERTY(Config, EditAnywhere)
 	EUserDataStorage UserDataStorage;
+	
+	/**
+	 * A JWT signed by the secret key is generated for each successfully authenticated user.
+	 * To make sure that the JWT has not expired and belongs to the user in your project, you need to validate its value.
+	 * Check *Extras/TokenVerificator* folder for example of verification server app.
+	 */
+	UPROPERTY(Config, EditAnywhere)
+	FString VerifyTokenURL;
 };

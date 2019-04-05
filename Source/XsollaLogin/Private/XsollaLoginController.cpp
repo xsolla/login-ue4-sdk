@@ -81,7 +81,7 @@ void UXsollaLoginController::AuthenticateUser(const FString& Username, const FSt
 
 	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
 
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::AuthUpdated_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::UserLogin_HttpRequestComplete, SuccessCallback, ErrorCallback);
 
 	HttpRequest->SetURL(Url);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
@@ -123,7 +123,28 @@ void UXsollaLoginController::ResetUserPassword(const FString& Username, const FO
 
 void UXsollaLoginController::ValidateToken(const FOnAuthUpdate& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
-	UE_LOG(LogXsollaLogin, Warning, TEXT("%s: Not implemented yet"), *VA_FUNC_LINE);
+	// Prepare request payload
+	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
+	RequestDataJson->SetStringField(TEXT("token"), LoginData.AuthToken.JWT);
+	
+	FString PostContent;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
+	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
+	
+	// Generate endpoint url
+	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+	const FString Url = Settings->VerifyTokenURL;
+	
+	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
+	
+	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::TokenVerify_HttpRequestComplete, SuccessCallback, ErrorCallback);
+	
+	HttpRequest->SetURL(Url);
+	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	HttpRequest->SetVerb(TEXT("POST"));
+	HttpRequest->SetContentAsString(PostContent);
+	
+	HttpRequest->ProcessRequest();
 }
 
 void UXsollaLoginController::Default_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnRequestSuccess SuccessCallback, FOnAuthError ErrorCallback)
@@ -139,19 +160,18 @@ void UXsollaLoginController::Default_HttpRequestComplete(FHttpRequestPtr HttpReq
 	SuccessCallback.ExecuteIfBound();
 }
 
-void UXsollaLoginController::AuthUpdated_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+void UXsollaLoginController::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
 {
 	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
 	{
 		return;
 	}
-	
-	FString ErrorStr;
-	static const FString ErrorCode = TEXT("204");
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-	
+
+	FString ErrorStr;
+
 	TSharedPtr<FJsonObject> JsonObject;
 	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*ResponseStr);
 	if (FJsonSerializer::Deserialize(Reader, JsonObject))
@@ -164,11 +184,11 @@ void UXsollaLoginController::AuthUpdated_HttpRequestComplete(FHttpRequestPtr Htt
 			if(FParse::Value(*LoginUrl, TEXT("token="), LoginData.AuthToken.JWT))
 			{
 				FParse::Bool(*LoginUrl, TEXT("remember_me="), LoginData.bRememberMe);
-				
+
 				UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received token: %s"), *VA_FUNC_LINE, *LoginData.AuthToken.JWT);
-				
-				// @TODO Start verification process now
-				SuccessCallback.ExecuteIfBound(LoginData);
+
+				// Start verification process now
+				ValidateToken(SuccessCallback, ErrorCallback);
 			}
 			else
 			{
@@ -186,7 +206,20 @@ void UXsollaLoginController::AuthUpdated_HttpRequestComplete(FHttpRequestPtr Htt
 	}
 	
 	// No success before so call the error callback
-	ErrorCallback.ExecuteIfBound(ErrorCode, ErrorStr);
+	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
+}
+
+void UXsollaLoginController::TokenVerify_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthUpdate SuccessCallback, FOnAuthError ErrorCallback)
+{
+	if (HandleRequestError(HttpRequest, HttpResponse, bSucceeded, ErrorCallback))
+	{
+		return;
+	}
+	
+	FString ResponseStr = HttpResponse->GetContentAsString();
+	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+	
+	SuccessCallback.ExecuteIfBound(LoginData);
 }
 
 bool UXsollaLoginController::HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback)
