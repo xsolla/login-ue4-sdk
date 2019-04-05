@@ -126,12 +126,15 @@ void UXsollaLoginController::AuthUpdated_HttpRequestComplete(FHttpRequestPtr Htt
 bool UXsollaLoginController::HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback)
 {
 	FString ErrorStr;
+	FString ErrorCode = TEXT("204");
 
 	if (bSucceeded && HttpResponse.IsValid())
 	{
 		if (!EHttpResponseCodes::IsOk(HttpResponse->GetResponseCode()))
 		{
 			FString ResponseStr = HttpResponse->GetContentAsString();
+
+			ErrorCode = FString::Printf(TEXT("%d"), HttpResponse->GetResponseCode());
 			ErrorStr = FString::Printf(TEXT("Invalid response. code=%d error=%s"), HttpResponse->GetResponseCode(), *ResponseStr);
 
 			// Example: {"error":{"code":"003-003","description":"The username is already taken"}}
@@ -143,10 +146,8 @@ bool UXsollaLoginController::HandleRequestError(FHttpRequestPtr HttpRequest, FHt
 				if (JsonObject->HasTypedField<EJson::Object>(ErrorFieldName))
 				{
 					TSharedPtr<FJsonObject> ErrorObject = JsonObject.Get()->GetObjectField(ErrorFieldName);
-					FString ErrorCode = ErrorObject.Get()->GetStringField(TEXT("code"));
-					FString ErrorDescription = ErrorObject.Get()->GetStringField(TEXT("description"));
-
-					ErrorCallback.ExecuteIfBound(ErrorCode, ErrorDescription);
+					ErrorCode = ErrorObject.Get()->GetStringField(TEXT("code"));
+					ErrorStr = ErrorObject.Get()->GetStringField(TEXT("description"));
 				}
 				else
 				{
@@ -167,6 +168,7 @@ bool UXsollaLoginController::HandleRequestError(FHttpRequestPtr HttpRequest, FHt
 	if (!ErrorStr.IsEmpty())
 	{
 		UE_LOG(LogXsollaLogin, Warning, TEXT("%s: request failed. %s"), *VA_FUNC_LINE, *ErrorStr);
+		ErrorCallback.ExecuteIfBound(ErrorCode, ErrorStr);
 		return true;
 	}
 
