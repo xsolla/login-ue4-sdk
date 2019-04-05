@@ -228,10 +228,12 @@ bool UXsollaLoginController::HandleRequestError(FHttpRequestPtr HttpRequest, FHt
 {
 	FString ErrorStr;
 	FString ErrorCode = TEXT("204");
-	FString ResponseStr = HttpResponse->GetContentAsString();
+	FString ResponseStr = TEXT("invalid");
 
 	if (bSucceeded && HttpResponse.IsValid())
 	{
+		ResponseStr = HttpResponse->GetContentAsString();
+
 		if (!EHttpResponseCodes::IsOk(HttpResponse->GetResponseCode()))
 		{
 			ErrorCode = FString::Printf(TEXT("%d"), HttpResponse->GetResponseCode());
