@@ -193,8 +193,19 @@ void UXsollaLoginController::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpR
 
 			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received token: %s"), *VA_FUNC_LINE, *LoginData.AuthToken.JWT);
 
-			// Start verification process now
-			ValidateToken(SuccessCallback, ErrorCallback);
+			// Check if verification URL is provided
+			if (FXsollaLoginModule::Get().GetSettings()->VerifyTokenURL.IsEmpty())
+			{
+				UE_LOG(LogXsollaLogin, VeryVerbose, TEXT("%s: No VerifyTokenURL is set, skip token verification step"), *VA_FUNC_LINE);
+
+				SuccessCallback.ExecuteIfBound(LoginData);
+			}
+			else
+			{
+				// Start verification process now
+				ValidateToken(SuccessCallback, ErrorCallback);
+			}
+
 			return;
 		}
 		else
