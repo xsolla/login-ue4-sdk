@@ -45,12 +45,12 @@ public:
 	UXsollaLoginSettings* GetSettings() const;
 
 	/** Get global xsolla login data controller */
-	UXsollaLoginController* GetLoginController() const;
+	UXsollaLoginController* GetLoginController(UWorld* World) const;
 
 private:
 	/** Module settings */
 	UXsollaLoginSettings* XsollaLoginSettings;
 
-	/** Login data controller */
-	UXsollaLoginController* XsollaLoginController;
+	/** Login data controllers (one for each World we have) */
+	TMap<UWorld*, UXsollaLoginController*> XsollaLoginControllers;
 };

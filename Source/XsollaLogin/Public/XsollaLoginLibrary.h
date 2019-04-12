@@ -14,6 +14,6 @@ class XSOLLALOGIN_API UXsollaLoginLibrary : public UBlueprintFunctionLibrary
 
 public:
 	/** Direct access to login controller */
-	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login", BlueprintPure)
-	static UXsollaLoginController* GetLoginController();
+	UFUNCTION(BlueprintPure, Category = "Xsolla|Login", meta = (WorldContext = "WorldContextObject"))
+	static UXsollaLoginController* GetLoginController(UObject* WorldContextObject);
 };

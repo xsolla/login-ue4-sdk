@@ -3,6 +3,7 @@
 
 #include "XsollaLoginLibrary.h"
 
+#include "Engine/Engine.h"
 #include "XsollaLogin.h"
 
 UXsollaLoginLibrary::UXsollaLoginLibrary(const FObjectInitializer& ObjectInitializer)
@@ -10,7 +11,12 @@ UXsollaLoginLibrary::UXsollaLoginLibrary(const FObjectInitializer& ObjectInitial
 {
 }
 
-UXsollaLoginController* UXsollaLoginLibrary::GetLoginController()
+UXsollaLoginController* UXsollaLoginLibrary::GetLoginController(UObject* WorldContextObject)
 {
-	return FXsollaLoginModule::Get().GetLoginController();
+	if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		return FXsollaLoginModule::Get().GetLoginController(World);
+	}
+
+	return nullptr;
 }
