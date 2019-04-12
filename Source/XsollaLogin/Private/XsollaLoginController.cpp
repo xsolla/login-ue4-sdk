@@ -5,6 +5,7 @@
 
 #include "XsollaLogin.h"
 #include "XsollaLoginDefines.h"
+#include "XsollaLoginSave.h"
 #include "XsollaLoginSettings.h"
 
 #include "Json.h"
@@ -63,7 +64,8 @@ void UXsollaLoginController::AuthenticateUser(const FString& Username, const FSt
 	LoginData = FXsollaLoginData();
 	LoginData.Username = Username;
 	LoginData.bRememberMe = bRememberMe;
-	
+	UXsollaLoginSave::Save(LoginData);
+
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	RequestDataJson->SetStringField(TEXT("username"), Username);
@@ -99,28 +101,28 @@ void UXsollaLoginController::ResetUserPassword(const FString& Username, const FO
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	RequestDataJson->SetStringField(TEXT("username"), Username);
-	
+
 	FString PostContent;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-	
+
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? ResetPasswordEndpoint : ProxyResetPasswordEndpoint;
 	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
-										*Endpoint,
-										*Settings->ProjectId,
-										*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
-	
+		*Endpoint,
+		*Settings->ProjectId,
+		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
+
 	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
-	
+
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	
+
 	HttpRequest->SetURL(Url);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 	HttpRequest->SetVerb(TEXT("POST"));
 	HttpRequest->SetContentAsString(PostContent);
-	
+
 	HttpRequest->ProcessRequest();
 }
 
@@ -129,24 +131,24 @@ void UXsollaLoginController::ValidateToken(const FOnAuthUpdate& SuccessCallback,
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
 	RequestDataJson->SetStringField(TEXT("token"), LoginData.AuthToken.JWT);
-	
+
 	FString PostContent;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&PostContent);
 	FJsonSerializer::Serialize(RequestDataJson.ToSharedRef(), Writer);
-	
+
 	// Generate endpoint url
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = Settings->VerifyTokenURL;
-	
+
 	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
-	
+
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::TokenVerify_HttpRequestComplete, SuccessCallback, ErrorCallback);
-	
+
 	HttpRequest->SetURL(Url);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 	HttpRequest->SetVerb(TEXT("POST"));
 	HttpRequest->SetContentAsString(PostContent);
-	
+
 	HttpRequest->ProcessRequest();
 }
 
@@ -187,6 +189,7 @@ void UXsollaLoginController::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpR
 
 			LoginData.AuthToken.JWT = UGameplayStatics::ParseOption(UrlOptions, TEXT("token"));
 			LoginData.bRememberMe = UGameplayStatics::ParseOption(UrlOptions, TEXT("remember_me")).ToBool();
+			UXsollaLoginSave::Save(LoginData);
 
 			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received token: %s"), *VA_FUNC_LINE, *LoginData.AuthToken.JWT);
 
@@ -203,7 +206,7 @@ void UXsollaLoginController::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpR
 	{
 		ErrorStr = FString::Printf(TEXT("Can't deserialize response json: "), *ResponseStr);
 	}
-	
+
 	// No success before so call the error callback
 	ErrorCallback.ExecuteIfBound(TEXT("204"), ErrorStr);
 }
@@ -214,12 +217,13 @@ void UXsollaLoginController::TokenVerify_HttpRequestComplete(FHttpRequestPtr Htt
 	{
 		return;
 	}
-	
+
 	FString ResponseStr = HttpResponse->GetContentAsString();
 	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
-	
+
 	// If no error happend so token is verified now
 	LoginData.AuthToken.bIsVerified = true;
+	UXsollaLoginSave::Save(LoginData);
 
 	SuccessCallback.ExecuteIfBound(LoginData);
 }
@@ -285,6 +289,14 @@ FXsollaLoginData UXsollaLoginController::GetLoginData()
 void UXsollaLoginController::DropLoginData()
 {
 	LoginData = FXsollaLoginData();
+
+	// Drop saved data too
+	UXsollaLoginSave::Save(LoginData);
+}
+
+void UXsollaLoginController::LoadSavedData()
+{
+	LoginData = UXsollaLoginSave::Load();
 }
 
 #undef LOCTEXT_NAMESPACE

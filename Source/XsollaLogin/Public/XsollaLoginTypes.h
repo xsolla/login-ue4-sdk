@@ -13,14 +13,15 @@ struct FXsollaAuthToken
 	/** A JWT signed by the secret key is generated for each successfully authenticated user. */
 	UPROPERTY(BlueprintReadOnly)
 	FString JWT;
-	
+
 	/** Token verification status. */
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsVerified;
 
 	FXsollaAuthToken()
 		: bIsVerified(false)
-	{}
+	{
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -30,14 +31,15 @@ struct FXsollaLoginData
 
 	UPROPERTY(BlueprintReadOnly)
 	FXsollaAuthToken AuthToken;
-	
+
 	UPROPERTY(BlueprintReadOnly)
 	FString Username;
-	
+
 	UPROPERTY(BlueprintReadOnly)
 	bool bRememberMe;
-	
+
 	FXsollaLoginData()
 		: bRememberMe(false)
-	{}
+	{
+	}
 };
