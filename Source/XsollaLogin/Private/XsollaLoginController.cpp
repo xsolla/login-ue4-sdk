@@ -160,7 +160,7 @@ void UXsollaLoginController::Default_HttpRequestComplete(FHttpRequestPtr HttpReq
 	}
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
 	SuccessCallback.ExecuteIfBound();
 }
@@ -173,7 +173,7 @@ void UXsollaLoginController::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpR
 	}
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
 	FString ErrorStr;
 
@@ -196,7 +196,7 @@ void UXsollaLoginController::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpR
 			// Check if verification URL is provided
 			if (FXsollaLoginModule::Get().GetSettings()->VerifyTokenURL.IsEmpty())
 			{
-				UE_LOG(LogXsollaLogin, VeryVerbose, TEXT("%s: No VerifyTokenURL is set, skip token verification step"), *VA_FUNC_LINE);
+				UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: No VerifyTokenURL is set, skip token verification step"), *VA_FUNC_LINE);
 
 				SuccessCallback.ExecuteIfBound(LoginData);
 			}
@@ -230,7 +230,7 @@ void UXsollaLoginController::TokenVerify_HttpRequestComplete(FHttpRequestPtr Htt
 	}
 
 	FString ResponseStr = HttpResponse->GetContentAsString();
-	UE_LOG(LogXsollaLogin, Log, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
+	UE_LOG(LogXsollaLogin, Verbose, TEXT("%s: Response: %s"), *VA_FUNC_LINE, *ResponseStr);
 
 	// If no error happend so token is verified now
 	LoginData.AuthToken.bIsVerified = true;
