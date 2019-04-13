@@ -73,6 +73,9 @@ public:
 	/** Load save game and extract data */
 	void LoadSavedData();
 
+	/** Save cached data or reset one if RememberMe is false */
+	void SaveData();
+
 protected:
 	/** Keeps state of user login */
 	FXsollaLoginData LoginData;

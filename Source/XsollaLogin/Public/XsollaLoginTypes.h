@@ -36,6 +36,9 @@ struct FXsollaLoginData
 	FString Username;
 
 	UPROPERTY(BlueprintReadOnly)
+	FString Password;
+
+	UPROPERTY(BlueprintReadOnly)
 	bool bRememberMe;
 
 	FXsollaLoginData()

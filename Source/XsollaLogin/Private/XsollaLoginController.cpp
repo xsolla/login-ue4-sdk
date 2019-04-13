@@ -63,8 +63,9 @@ void UXsollaLoginController::AuthenticateUser(const FString& Username, const FSt
 	// Be sure we've dropped any saved info
 	LoginData = FXsollaLoginData();
 	LoginData.Username = Username;
+	LoginData.Password = Password;
 	LoginData.bRememberMe = bRememberMe;
-	UXsollaLoginSave::Save(LoginData);
+	SaveData();
 
 	// Prepare request payload
 	TSharedPtr<FJsonObject> RequestDataJson = MakeShareable(new FJsonObject);
@@ -189,7 +190,7 @@ void UXsollaLoginController::UserLogin_HttpRequestComplete(FHttpRequestPtr HttpR
 
 			LoginData.AuthToken.JWT = UGameplayStatics::ParseOption(UrlOptions, TEXT("token"));
 			LoginData.bRememberMe = UGameplayStatics::ParseOption(UrlOptions, TEXT("remember_me")).ToBool();
-			UXsollaLoginSave::Save(LoginData);
+			SaveData();
 
 			UE_LOG(LogXsollaLogin, Log, TEXT("%s: Received token: %s"), *VA_FUNC_LINE, *LoginData.AuthToken.JWT);
 
@@ -234,7 +235,7 @@ void UXsollaLoginController::TokenVerify_HttpRequestComplete(FHttpRequestPtr Htt
 
 	// If no error happend so token is verified now
 	LoginData.AuthToken.bIsVerified = true;
-	UXsollaLoginSave::Save(LoginData);
+	SaveData();
 
 	SuccessCallback.ExecuteIfBound(LoginData);
 }
@@ -308,6 +309,19 @@ void UXsollaLoginController::DropLoginData()
 void UXsollaLoginController::LoadSavedData()
 {
 	LoginData = UXsollaLoginSave::Load();
+}
+
+void UXsollaLoginController::SaveData()
+{
+	if(LoginData.bRememberMe)
+	{
+		UXsollaLoginSave::Save(LoginData);
+	}
+	else
+	{
+		// Dron't drop cache in memory but reset save file
+		UXsollaLoginSave::Save(FXsollaLoginData());
+	}
 }
 
 #undef LOCTEXT_NAMESPACE
