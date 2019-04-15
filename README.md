@@ -12,7 +12,7 @@ Development repository for the Xsolla Login SDK for Unreal Engine 4 platforms.
 1. Make a **Plugins/XsollaLogin** folder under your game project directory and copy plugin source into it.
 1. Compile your game project normally. Unreal Build Tool will detect the plugins and compile them as dependencies to your game.
 1. Launch the editor.
-1. Go to `Project Settings -> Plugins -> Xsolla Login SDK` and set **Login ID** from Publisher Account as `Project Id`.
+1. Go to `Project Settings -> Plugins -> Xsolla Login SDK` and set `Project Id` as **Login ID** from Publisher Account.
 
 ## How To
 
@@ -27,6 +27,14 @@ Adds a new user to the database. The user will receive an account confirmation m
 Authenticates the user by the username and password specified.
 
 ![SCREENSHOT](Documentation/req_auth.png)
+
+### Use Login Data
+
+Once user is athenicated the login data is stored in XsollaLoginController. Use `GetLoginData()` function to get access to it.
+
+![SCREENSHOT](Documentation/req_get_login_data.png)
+
+If `RememberMe` option was set the login data will be saved locally and loaded from cache once app is started. No manual data save is required.
 
 ### User Password Reset
 
@@ -48,5 +56,5 @@ A [JWT](https://jwt.io/introduction/) signed by the secret key is generated for 
 
 Validation is optional for client-side, but required for server-side usage (f.e. for in-app pushaces confirmation). See [TokenVerificator](https://github.com/xsolla/login-ue4-sdk/tree/develop/Extras/TokenVerificator) example.
 
-To enable auto-validation of the JWT on client-side just set the `VerifyTokenURL` parameter with your server validation url, and it will be validated on user login event.
+To enable auto-validation of the JWT on the client-side just set the `VerifyTokenURL` parameter with your server validation url, and it will be validated on user login event.
 
