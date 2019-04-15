@@ -10,6 +10,7 @@
 
 #include "Json.h"
 #include "Kismet/GameplayStatics.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 #define LOCTEXT_NAMESPACE "FXsollaLoginModule"
 
@@ -273,6 +274,12 @@ TSharedRef<IHttpRequest> UXsollaLoginController::CreateHttpRequest(const FString
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 	HttpRequest->SetVerb(TEXT("POST"));
 	HttpRequest->SetContentAsString(Content);
+
+	// Xsolla meta
+	HttpRequest->SetHeader(TEXT("engine"), TEXT("ue4"));
+	HttpRequest->SetHeader(TEXT("engine_v"), ENGINE_VERSION_STRING);
+	HttpRequest->SetHeader(TEXT("sdk"), TEXT("login"));
+	HttpRequest->SetHeader(TEXT("sdk_v"), XSOLLA_LOGIN_VERSION);
 
 	return HttpRequest;
 }
