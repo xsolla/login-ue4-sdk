@@ -61,6 +61,10 @@ protected:
 	/** Return true if error is happened */
 	bool HandleRequestError(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FOnAuthError ErrorCallback);
 
+private:
+	/** Create http request and add Xsolla API meta */
+	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const FString& Content);
+
 public:
 	/** Get user login state data */
 	UFUNCTION(BlueprintPure, Category = "Xsolla|Login")

@@ -46,15 +46,8 @@ void UXsollaLoginController::RegistrateUser(const FString& Username, const FStri
 		*Settings->ProjectId,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
-	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
-
-	HttpRequest->SetURL(Url);
-	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-	HttpRequest->SetVerb(TEXT("POST"));
-	HttpRequest->SetContentAsString(PostContent);
-
 	HttpRequest->ProcessRequest();
 }
 
@@ -85,15 +78,8 @@ void UXsollaLoginController::AuthenticateUser(const FString& Username, const FSt
 		*Settings->ProjectId,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
-	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::UserLogin_HttpRequestComplete, SuccessCallback, ErrorCallback);
-
-	HttpRequest->SetURL(Url);
-	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-	HttpRequest->SetVerb(TEXT("POST"));
-	HttpRequest->SetContentAsString(PostContent);
-
 	HttpRequest->ProcessRequest();
 }
 
@@ -115,15 +101,8 @@ void UXsollaLoginController::ResetUserPassword(const FString& Username, const FO
 		*Settings->ProjectId,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
-	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::Default_HttpRequestComplete, SuccessCallback, ErrorCallback);
-
-	HttpRequest->SetURL(Url);
-	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-	HttpRequest->SetVerb(TEXT("POST"));
-	HttpRequest->SetContentAsString(PostContent);
-
 	HttpRequest->ProcessRequest();
 }
 
@@ -141,15 +120,8 @@ void UXsollaLoginController::ValidateToken(const FOnAuthUpdate& SuccessCallback,
 	const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
 	const FString Url = Settings->VerifyTokenURL;
 
-	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
-
+	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent);
 	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UXsollaLoginController::TokenVerify_HttpRequestComplete, SuccessCallback, ErrorCallback);
-
-	HttpRequest->SetURL(Url);
-	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-	HttpRequest->SetVerb(TEXT("POST"));
-	HttpRequest->SetContentAsString(PostContent);
-
 	HttpRequest->ProcessRequest();
 }
 
@@ -293,6 +265,18 @@ bool UXsollaLoginController::HandleRequestError(FHttpRequestPtr HttpRequest, FHt
 	return false;
 }
 
+TSharedRef<IHttpRequest> UXsollaLoginController::CreateHttpRequest(const FString& Url, const FString& Content)
+{
+	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
+
+	HttpRequest->SetURL(Url);
+	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	HttpRequest->SetVerb(TEXT("POST"));
+	HttpRequest->SetContentAsString(Content);
+
+	return HttpRequest;
+}
+
 FXsollaLoginData UXsollaLoginController::GetLoginData()
 {
 	return LoginData;
@@ -313,7 +297,7 @@ void UXsollaLoginController::LoadSavedData()
 
 void UXsollaLoginController::SaveData()
 {
-	if(LoginData.bRememberMe)
+	if (LoginData.bRememberMe)
 	{
 		UXsollaLoginSave::Save(LoginData);
 	}
