@@ -34,7 +34,7 @@ Once user is athenicated the login data is stored in XsollaLoginController. Use 
 
 ![SCREENSHOT](Documentation/req_get_login_data.png)
 
-If `RememberMe` option was set the login data will be saved locally and loaded from cache once app is started. No manual data save is required.
+If `RememberMe` option was set the data will be saved locally and loaded from cache once app is started. No manual save is required.
 
 ### User Password Reset
 
