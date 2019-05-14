@@ -21,3 +21,8 @@ UXsollaLoginController* UXsollaLoginLibrary::GetLoginController(UObject* WorldCo
 
 	return nullptr;
 }
+
+UXsollaLoginSettings* UXsollaLoginLibrary::GetLoginSettings()
+{
+	return FXsollaLoginModule::Get().GetSettings();
+}
