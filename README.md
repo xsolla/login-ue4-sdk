@@ -177,7 +177,7 @@ Gets Xsolla Login Settings described in the [table](#installing-and-setting-up-t
 
 **Reset User Password**
 
-Resets the user password. The user will receive a password change verification [message] (https://developers.xsolla.com/recipes/login/email-customization/).
+Resets the user password. The user will receive a password change verification [message](https://developers.xsolla.com/recipes/login/email-customization/).
 
 <details><summary>Example</summary>
   <img src="Documentation/req_reset.png"></img>
@@ -192,10 +192,11 @@ A [JWT](https://jwt.io/introduction/) is generated for each successfully authent
 ```
 $ npm install -g firebase-tools
 ```
-**Note:** If the package could not get access to system files, try to reinstall Node.JS following the [instruction](https://treehouse.github.io/installation-guides/mac/node-mac.html).
+**Note:** If the package could not get access to system files, try to reinstall Node.JS following the [instruction](https://treehouse.github.io/installation-guides/mac/node-mac.html)
+
 4. Open console:
-  1. *If the plugin is installed from Epic Games Launcher*, go to the folder with UE installed > **Engine** > **Plugins** > **Marketplace** > **XsollaLogin** > **Extras** > **TokenVerificator**.
-  2. *If the plugin is installed from GitHub*, go to the UE project > **Plugins** > **XsollaLogin** > **Extras** > **TokenVerificator**. 
+    1. *If the plugin is installed from Epic Games Launcher*, go to the folder with UE installed > **Engine** > **Plugins** > **Marketplace** > **XsollaLogin** > **Extras** > **TokenVerificator**.
+    2. *If the plugin is installed from GitHub*, go to the UE project > **Plugins** > **XsollaLogin** > **Extras** > **TokenVerificator**. 
 5. Run the following command: 
 ```
 $ firebase login
