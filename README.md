@@ -177,7 +177,7 @@ Gets Xsolla Login Settings described in the [table](#installing-and-setting-up-t
 
 **Reset User Password**
 
-Resets the user password. The user will receive a password change verification [message (https://developers.xsolla.com/recipes/login/email-customization/).
+Resets the user password. The user will receive a password change verification [message] (https://developers.xsolla.com/recipes/login/email-customization/).
 
 <details><summary>Example</summary>
   <img src="Documentation/req_reset.png"></img>
