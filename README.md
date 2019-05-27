@@ -42,7 +42,7 @@ This solution works only for:
 ### Installing and Setting up the Plugin
 
 1. To install the plugin from [Epic Games Launcher](https://www.epicgames.com/unrealtournament/download):
-    1. Go to Epic Games Launcher > **Unreal Engine > Marketplace**.
+    1. Go to Epic Games Launcher > **Unreal Engine** > **Marketplace**.
     2. Find the **Xsolla Login SDK** plugin and click **Install to Engine**.
 2. To install the plugin from [GitHub](https://github.com/xsolla/login-ue4-sdk):
     1. Download the plugin from GitHub.
