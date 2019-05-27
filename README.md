@@ -152,7 +152,7 @@ Gets **XsollaLoginController** to use the **Get Login Data** node.
 
 **Get Login Data**
 
-Gets the authenticated user data from XsollaLoginController.
+Gets the authenticated user data from **XsollaLoginController**.
 
 *Output Data Pins*
 
@@ -192,7 +192,7 @@ A [JWT](https://jwt.io/introduction/) is generated for each successfully authent
 ```
 $ npm install -g firebase-tools
 ```
-**Note:** If the package could not get access to system files, try to reinstall Node.JS following the [instruction](https://treehouse.github.io/installation-guides/mac/node-mac.html)
+**Note:** If the package could not get access to system files, try to reinstall Node.JS following the [instruction](https://treehouse.github.io/installation-guides/mac/node-mac.html).
 
 4. Open console:
     1. *If the plugin is installed from Epic Games Launcher*, go to the folder with UE installed > **Engine** > **Plugins** > **Marketplace** > **XsollaLogin** > **Extras** > **TokenVerificator**.
