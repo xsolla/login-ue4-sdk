@@ -24,7 +24,7 @@ class XSOLLALOGIN_API UXsollaLoginSettings : public UObject
 public:
 	/** Login ID from Publisher Account. Required. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
-	FString ProjectId;
+	FString LoginProjectID;
 
 	/**
 	 * URL to generate the link with additional parameters and to redirect the user to
@@ -44,6 +44,6 @@ public:
 	 * To make sure that the JWT has not expired and belongs to the user in your project, you need to validate its value.
 	 * Check *Extras/TokenVerificator* folder for example of verification server app.
 	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings", meta = (DisplayName = "JWT Validation URL"))
 	FString VerifyTokenURL;
 };
