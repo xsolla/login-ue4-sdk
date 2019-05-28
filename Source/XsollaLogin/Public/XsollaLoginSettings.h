@@ -23,7 +23,7 @@ class XSOLLALOGIN_API UXsollaLoginSettings : public UObject
 
 public:
 	/** Login ID from Publisher Account. Required. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	FString ProjectId;
 
 	/**
@@ -32,11 +32,11 @@ public:
 	 * specified in Publisher Account in Login settings.
 	 * Required if there are several Callback URLs.
 	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	FString CallbackURL;
 
 	/** API methods will be calling different URLs depending on the selected storage method. */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	EUserDataStorage UserDataStorage;
 
 	/**
@@ -44,6 +44,6 @@ public:
 	 * To make sure that the JWT has not expired and belongs to the user in your project, you need to validate its value.
 	 * Check *Extras/TokenVerificator* folder for example of verification server app.
 	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Xsolla Login Settings")
 	FString VerifyTokenURL;
 };
