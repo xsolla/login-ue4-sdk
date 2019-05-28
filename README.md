@@ -58,7 +58,7 @@ Target OS:
     3. Unpack the archive with the plugin to the **XsollaLogin** folder.
 3. Open your UE project in Unreal Editor.
 4. Compile your UE project.
-5. Go to the **Content Browser** and add a **New C++ Class** with the **None** parent node. *Required for Blueprint projects with the plugin installed from GitHub only.*
+5. Go to the **Content Browser** and add a **New C++ Class** with the **None** parent node. *Required only for Blueprint projects with the plugin installed from GitHub.*
 6. Go to **Settings** > **Plugins**:
     1. Find the **XsollaLogin** plugin.
     2. Tick the **Enabled** box.
@@ -78,22 +78,22 @@ Target OS:
 
 Processing of events is already set up in the integration demo. You can use it and change the settings appropriately:
 * *If the plugin is installed from Epic Games Launcher*, open your UE project in Unreal Editor and go to **XsollaLogin Content** > **Demo** > **W_LoginWidget**.
-* *If the plugin is installed from GitHub*, open your UE project in Unreal Editor and go to your UE project > **Plugins** > **XsollaLogin** > **Content** > **Demo** > **W_LoginWidget**. 
+* *If the plugin is installed from GitHub*, open your UE project in Unreal Editor and go to **Plugins** > **XsollaLogin** > **Content** > **Demo** > **W_LoginWidget**. 
 
 **Note:** If you could not find the files mentioned above in Unreal Editor, go to **View Options** and tick the **Show Plugin Content** box.
 
-To try demo widget in the UE project:
+To try the demo widget in the UE project:
 1. Open your UE project in Unreal Editor.
 2. Go to **Blueprints** > **Open Level Blueprint** and add nodes as shown in the picture below:
 ![SCREENSHOT](Documentation/use_demo_widget.png)
-3. Compile Blueprint/C++ class and play the level.
+3. Compile the Blueprint/C++ class and play the level.
 
 You can also use your own authorization interface and set up your own project’s events as follows: 
 1. Open your UE project in Unreal Editor.
 2. Add and design the interface for user authorization following [documentation](https://docs.unrealengine.com/en-us/Engine/UMG).
 3. Open the authorization interface in the **Graph** view. 
 4. Add and set up **Xsolla Login SDK nodes** described below.
-5. Compile Blueprint/C++ class and play the level.
+5. Compile the Blueprint/C++ class and play the level.
 
 #### Xsolla Login SDK Nodes
 
