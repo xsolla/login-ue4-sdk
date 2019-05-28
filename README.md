@@ -6,6 +6,14 @@ This solution works only for:
 * storing user data at Xsolla’s side
 * authentication via email/username and password
 
+Target OS:
+* iOS
+* Android
+* Linux
+* Mac OS
+* Windows 32-bit
+* Windows 64-bit
+
 **Info:** The integration demo is available in the **Content** folder. It includes authorization interface and events processing already set up. You can use it as an example.
 
 ## System Requirements
@@ -15,7 +23,7 @@ This solution works only for:
 * Mac OS X 10.9.2 and higher
 * Visual Studio 2017 and higher
 * XCode 10.1 and higher for Mac OS
-* Unreal Engine v4.21 and higher
+* Unreal Engine 4.21 and higher
 
 ## Integration Flow
 
@@ -50,7 +58,7 @@ This solution works only for:
     3. Unpack the archive with the plugin to the **XsollaLogin** folder.
 3. Open your UE project in Unreal Editor.
 4. Compile your UE project.
-5. Go to the **Content Browser** and add a **New C++ Class** with the **None** parent node. *Required for Blueprint projects only.*
+5. Go to the **Content Browser** and add a **New C++ Class** with the **None** parent node. *Required only for Blueprint projects with the plugin installed from GitHub.*
 6. Go to **Settings** > **Plugins**:
     1. Find the **XsollaLogin** plugin.
     2. Tick the **Enabled** box.
@@ -69,23 +77,23 @@ This solution works only for:
 **Info:** Events are key actions that a user performs during the authentication process.
 
 Processing of events is already set up in the integration demo. You can use it and change the settings appropriately:
-* *If the plugin is installed from Epic Games Launcher*, go to Unreal Editor > your UE project > **XsollaLogin Content** > **Demo** > **W_LoginWidget**.
-* *If the plugin is installed from GitHub*, go to Unreal Editor > your UE project > **Plugins** > **XsollaLogin** > **Content** > **Demo** > **W_LoginWidget**. 
+* *If the plugin is installed from Epic Games Launcher*, open your UE project in Unreal Editor and go to **XsollaLogin Content** > **Demo** > **W_LoginWidget**.
+* *If the plugin is installed from GitHub*, open your UE project in Unreal Editor and go to **Plugins** > **XsollaLogin** > **Content** > **Demo** > **W_LoginWidget**. 
 
 **Note:** If you could not find the files mentioned above in Unreal Editor, go to **View Options** and tick the **Show Plugin Content** box.
 
-To use demo widget in the UE project:
+To try the demo widget in the UE project:
 1. Open your UE project in Unreal Editor.
 2. Go to **Blueprints** > **Open Level Blueprint** and add nodes as shown in the picture below:
 ![SCREENSHOT](Documentation/use_demo_widget.png)
-3. Compile and run your UE project.
+3. Compile the Blueprint/C++ class and play the level.
 
 You can also use your own authorization interface and set up your own project’s events as follows: 
 1. Open your UE project in Unreal Editor.
 2. Add and design the interface for user authorization following [documentation](https://docs.unrealengine.com/en-us/Engine/UMG).
 3. Open the authorization interface in the **Graph** view. 
 4. Add and set up **Xsolla Login SDK nodes** described below.
-5. Compile and run your UE project.
+5. Compile the Blueprint/C++ class and play the level.
 
 #### Xsolla Login SDK Nodes
 
@@ -152,7 +160,7 @@ Gets **XsollaLoginController** to use the **Get Login Data** node.
 
 **Get Login Data**
 
-Gets the authenticated user data from **XsollaLoginController**.
+Gets the data structure of the authenticated user from **XsollaLoginController**.
 
 *Output Data Pins*
 
@@ -211,6 +219,6 @@ $ firebase login
     $ npm run deploy
     ```
     3. Copy the URL from the console.
-9. Open the UE project in Unreal Editor, go to **Settings** > **Project Settings** > **Plugins** > **Xsolla Login SDK** and paste the copied URL to the **JWT validation URL** field.
+9. Open your UE project in Unreal Editor, go to **Settings** > **Project Settings** > **Plugins** > **Xsolla Login SDK** and paste the copied URL to the **JWT validation URL** field.
 
 **Note:** Login SDK automatically validates and updates the JWT value on the Xsolla’s server. 
