@@ -44,6 +44,6 @@ public:
 	 * To make sure that the JWT has not expired and belongs to the user in your project, you need to validate its value.
 	 * Check *Extras/TokenVerificator* folder for example of verification server app.
 	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "JWT Validation URL"))
 	FString VerifyTokenURL;
 };
