@@ -24,7 +24,7 @@ class XSOLLALOGIN_API UXsollaLoginSettings : public UObject
 public:
 	/** Login ID from Publisher Account. Required. */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly)
-	FString ProjectId;
+	FString LoginProjectID;
 
 	/**
 	 * URL to generate the link with additional parameters and to redirect the user to
