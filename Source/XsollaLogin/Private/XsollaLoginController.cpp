@@ -271,7 +271,10 @@ TSharedRef<IHttpRequest> UXsollaLoginController::CreateHttpRequest(const FString
 	TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
 
 	// Temporal solution with headers processing on server-side #37
-	const FString MetaUrl = FString::Printf(TEXT("&engine=ue4&engine_v=%s&sdk=login&sdk_v=%s"), ENGINE_VERSION_STRING, XSOLLA_LOGIN_VERSION);
+	const FString MetaUrl = FString::Printf(TEXT("%sengine=ue4&engine_v=%s&sdk=login&sdk_v=%s"),
+		Url.Contains(TEXT("?")) ? TEXT("&") : TEXT("?"),
+		ENGINE_VERSION_STRING,
+		XSOLLA_LOGIN_VERSION);
 
 	HttpRequest->SetURL(Url + MetaUrl);
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
