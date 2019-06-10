@@ -21,6 +21,10 @@ class XSOLLALOGIN_API UXsollaLoginController : public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
+	/** Initialize controller with provided project id (use to override project settings) */
+	UFUNCTION(BlueprintCallable, Category = "Xsolla|Login")
+	void Initialize(const FString& InLoginProjectId);
+
 	/**
 	 * Adds a new user to the database. The user will receive an account confirmation message to the specified email.
 	 *
@@ -64,6 +68,9 @@ protected:
 private:
 	/** Create http request and add Xsolla API meta */
 	TSharedRef<IHttpRequest> CreateHttpRequest(const FString& Url, const FString& Content);
+
+	/** Cached Xsolla Login project id */
+	FString LoginProjectId;
 
 public:
 	/** Get user login state data */

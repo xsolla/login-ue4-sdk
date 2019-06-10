@@ -38,6 +38,10 @@ void FXsollaLoginModule::StartupModule()
 		LoginController->SetFlags(RF_Standalone);
 		LoginController->LoadSavedData();
 
+		// Initialize module with project id provided by user
+		const UXsollaLoginSettings* Settings = FXsollaLoginModule::Get().GetSettings();
+		LoginController->Initialize(Settings->LoginProjectID);
+
 		XsollaLoginControllers.Add(World, LoginController);
 
 		UE_LOG(LogXsollaLogin, Log, TEXT("%s: XsollaLogin Controller is created for: %s"), *VA_FUNC_LINE, *World->GetName());

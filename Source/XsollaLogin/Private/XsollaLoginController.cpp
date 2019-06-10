@@ -27,6 +27,11 @@ UXsollaLoginController::UXsollaLoginController(const FObjectInitializer& ObjectI
 {
 }
 
+void UXsollaLoginController::Initialize(const FString& InLoginProjectId)
+{
+	LoginProjectId = InLoginProjectId;
+}
+
 void UXsollaLoginController::RegistrateUser(const FString& Username, const FString& Password, const FString& Email, const FOnRequestSuccess& SuccessCallback, const FOnAuthError& ErrorCallback)
 {
 	// Prepare request payload
@@ -44,7 +49,7 @@ void UXsollaLoginController::RegistrateUser(const FString& Username, const FStri
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? RegistrationEndpoint : ProxyRegistrationEndpoint;
 	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
 		*Endpoint,
-		*Settings->LoginProjectID,
+		*LoginProjectId,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent);
@@ -76,7 +81,7 @@ void UXsollaLoginController::AuthenticateUser(const FString& Username, const FSt
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? LoginEndpoint : ProxyLoginEndpoint;
 	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
 		*Endpoint,
-		*Settings->LoginProjectID,
+		*LoginProjectId,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent);
@@ -99,7 +104,7 @@ void UXsollaLoginController::ResetUserPassword(const FString& Username, const FO
 	const FString Endpoint = (Settings->UserDataStorage == EUserDataStorage::Xsolla) ? ResetPasswordEndpoint : ProxyResetPasswordEndpoint;
 	const FString Url = FString::Printf(TEXT("%s?projectId=%s&login_url=%s"),
 		*Endpoint,
-		*Settings->LoginProjectID,
+		*LoginProjectId,
 		*FGenericPlatformHttp::UrlEncode(Settings->CallbackURL));
 
 	TSharedRef<IHttpRequest> HttpRequest = CreateHttpRequest(Url, PostContent);
