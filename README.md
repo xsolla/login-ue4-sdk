@@ -1,10 +1,6 @@
-### Xsolla Store SDK for Unreal Engine 4
+### Xsolla Login SDK for Unreal Engine 4
 
-Xsolla UE4 SDK is used to integrate Xsolla products with apps based on the [Unreal Engine](https://www.unrealengine.com/). The solution includes the following SDKs:
-
-* Xsolla Login UE4 SDK
-* Xsolla Store UE4 SDK
-* Xsolla Pay Station UE4 SDK
+Login UE4 SDK is used to integrate Xsolla Login API methods with apps based on the Unreal Engine.
 
 ## System Requirements
 
@@ -13,7 +9,7 @@ Xsolla UE4 SDK is used to integrate Xsolla products with apps based on the [Unre
 * Mac OS X 10.9.2 and higher
 * Visual Studio 2017 and higher
 * XCode 10.1 and higher for Mac OS
-* Unreal Engine 4.24 and higher
+* Unreal Engine 4.25 and higher
 
 ## Target OS:
 
@@ -33,5 +29,5 @@ Xsolla UE4 SDK is used to integrate Xsolla products with apps based on the [Unre
     1. Go to Projects and click **Create new project**.
     2. In setup mode, add **Project name** and click **Create**.
     3. Go to **Project settings > Integration settings** and check that **Tokenless integration** is disabled.
-6. Go to the [wiki](https://github.com/xsolla/store-ue4-sdk/wiki) to learn how to integrate Xsolla products using  **Xsolla Store SDK for Unreal Engine 4**. 
+5. Go to the [wiki](https://github.com/xsolla/login-ue4-sdk/wiki) to learn how to integrate Xsolla products using  **Xsolla Login SDK for Unreal Engine 4**. 
 
