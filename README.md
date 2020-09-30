@@ -23,8 +23,8 @@ After integration of Login SDK, you can use [Xsolla Login](https://developers.xs
 *   Windows 7 and higher
 *   Mac OS X 10.9.2 and higher
 *   Visual Studio 2017 and higher for Windows
-*   XCode 10.1 and higher for Mac OS
-*   Unreal Engine 4.24 and higher
+*   XCode 11 and higher for Mac OS
+*   Unreal Engine 4.25 and higher
 
 
 ## Target OS
