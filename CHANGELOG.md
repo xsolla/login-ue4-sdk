@@ -1,3 +1,6 @@
 # Changelog
+## [1.0.0] - 2020-10-02 
 
-## Need update
+### Added 
+- User account functionality.
+- Friends system functionality.
