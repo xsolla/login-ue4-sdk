@@ -4,6 +4,7 @@
 #include "XsollaLoginSave.h"
 #include "XsollaLogin.h"
 #include "XsollaLoginSettings.h"
+#include "XsollaLoginDefines.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Base64.h"
@@ -13,7 +14,12 @@ const int32 UXsollaLoginSave::UserIndex = 0;
 
 FXsollaLoginData UXsollaLoginSave::Load()
 {
-	auto SaveInstance = Cast<UXsollaLoginSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, UserIndex));
+	if(!UGameplayStatics::DoesSaveGameExist(SaveSlotName, UserIndex))
+	{
+		return FXsollaLoginData();		
+	}
+	
+	const UXsollaLoginSave* SaveInstance = Cast<UXsollaLoginSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, UserIndex));
 	if (!SaveInstance)
 	{
 		return FXsollaLoginData();
@@ -48,7 +54,7 @@ FXsollaLoginData UXsollaLoginSave::Load()
 
 void UXsollaLoginSave::Save(const FXsollaLoginData& InLoginData)
 {
-	auto SaveInstance = Cast<UXsollaLoginSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, UserIndex));
+	UXsollaLoginSave* SaveInstance = Cast<UXsollaLoginSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, UserIndex));
 	if (!SaveInstance)
 	{
 		SaveInstance = Cast<UXsollaLoginSave>(UGameplayStatics::CreateSaveGameObject(StaticClass()));

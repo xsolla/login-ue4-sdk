@@ -10,6 +10,7 @@
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
 #include "Internationalization/Regex.h"
+#include "Kismet/GameplayStatics.h"
 #include "Misc/Base64.h"
 #include "Misc/CommandLine.h"
 #include "Online.h"
@@ -27,7 +28,7 @@ UXsollaLoginSettings* UXsollaLoginLibrary::GetLoginSettings()
 
 bool UXsollaLoginLibrary::IsEmailValid(const FString& EMail)
 {
-	FRegexPattern EmailPattern(TEXT("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"));
+	const FRegexPattern EmailPattern(TEXT("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"));
 	FRegexMatcher Matcher(EmailPattern, EMail);
 	return Matcher.FindNext();
 }
@@ -35,14 +36,13 @@ bool UXsollaLoginLibrary::IsEmailValid(const FString& EMail)
 FString UXsollaLoginLibrary::GetStringCommandLineParam(const FString& ParamName)
 {
 	TCHAR Result[1024] = TEXT("");
-	const bool FoundValue = FParse::Value(FCommandLine::Get(), *(ParamName + TEXT("=")), Result, UE_ARRAY_COUNT(Result));
+	const bool FoundValue = FParse::Value(FCommandLine::Get(), *ParamName, Result, UE_ARRAY_COUNT(Result));
 	return FoundValue ? FString(Result) : FString(TEXT(""));
 }
 
 FString UXsollaLoginLibrary::GetSessionTicket()
 {
-	IOnlineSubsystem* OnlineInterface;
-	OnlineInterface = IOnlineSubsystem::Get();
+	IOnlineSubsystem* OnlineInterface = IOnlineSubsystem::Get();
 	FString SessionTicket = OnlineInterface->GetIdentityInterface()->GetAuthToken(0);
 	return SessionTicket;
 }
@@ -90,4 +90,18 @@ TArray<uint8> UXsollaLoginLibrary::ConvertTextureToByteArray(UTexture2D* Texture
 	TextureData.Append(CompressedData);
 
 	return TextureData;
+}
+
+FString UXsollaLoginLibrary::GetUrlParameter(const FString& URL, const FString& Parameter)
+{
+	FString UrlOptions = URL.RightChop(URL.Find(TEXT("?"))).Replace(TEXT("&"), TEXT("?"));
+	FString ParameterValue = UGameplayStatics::ParseOption(UrlOptions, Parameter);
+
+	// get rid of extra symbols added by Login if any
+	if (ParameterValue.Contains(TEXT("#")))
+	{
+		ParameterValue = ParameterValue.Left(ParameterValue.Find(TEXT("#")));
+	}
+
+	return ParameterValue;
 }
