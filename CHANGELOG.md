@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.1] - 2021-03-19 
+
+### Added
+- Web request analytics enhancements.
+
 ## [0.3.0] - 2020-12-25 
 
 ### Added
