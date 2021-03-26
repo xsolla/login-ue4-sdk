@@ -6,6 +6,6 @@
 UXsollaUtilsSettings::UXsollaUtilsSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	static ConstructorHelpers::FClassFinder<UXsollaUtilsTheme> ThemeFinder(TEXT("/Xsolla/Utils/BP_DefaultTheme.BP_DefaultTheme_C"));
+	static ConstructorHelpers::FClassFinder<UXsollaUtilsTheme> ThemeFinder(TEXT("/XsollaLogin/Utils/BP_DefaultTheme.BP_DefaultTheme_C"));
 	InterfaceTheme = ThemeFinder.Class;
 }
