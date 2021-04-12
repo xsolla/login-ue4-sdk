@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 6,
-	"VersionName": "0.4.0",
+	"Version": 7,
+	"VersionName": "0.4.2",
 	"EngineVersion": "4.26.0",
 	"FriendlyName": "Xsolla Login",
 	"Description": "Xsolla Login for Unreal Engine 4",
