@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.3] - 2021-04-23
+
+### Added
+- Widgets manager.
+
+### Fixed
+- Account linking for Playstation platform.
+- Demo errors when using custom authentication system.
+- Google authentication via embedded browser.
+
 ## [0.4.2] - 2021-04-12
 
 ### Changed
