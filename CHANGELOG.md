@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.4] - 2021-05-07
+
+### Added
+- New parameters for API methods.
+
+### Fixed
+- Minor demo issues.
+
 ## [0.4.3] - 2021-04-23
 
 ### Added
