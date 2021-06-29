@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.0] - 2021-06-29
+
+### Added
+- Authentication via device ID.
+
+### Changed
+- Minor demo tweaks.
+- Plugin settings (Demo Client ID).
+- SDK code improvements.
+
 ## [0.4.4] - 2021-05-07
 
 ### Added
