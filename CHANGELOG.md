@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.1] - 2021-08-30
+
+### Fixed
+- Categories for editor module properties.
+
 ## [0.6.0] - 2021-08-25
 
 ### Added
