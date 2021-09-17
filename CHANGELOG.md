@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.0] - 2021-09-17
+
+### Changed
+- User demo refactoring.
+
+### Fixed
+- Issue with displaying embedded browser.
+- Empty Client ID without explicit plugin initialization.
+
 ## [0.6.1] - 2021-08-30
 
 ### Fixed
