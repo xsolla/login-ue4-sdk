@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.7.1] - 2021-11-29
+
+### Fixed
+- Minor issues.
+
 ## [0.7.0] - 2021-09-17
 
 ### Changed
