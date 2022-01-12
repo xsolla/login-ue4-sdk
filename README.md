@@ -189,7 +189,9 @@ To manage the features of Xsolla products, the plug-in contains a set of classes
 
 [Explore legal information](https://developers.xsolla.com/sdk/unreal-engine/commerce/get-started/#sdk_legal_compliance) that helps you work with Xsolla.
 
-Xsolla offers the necessary tools to help you build and grow your gaming business, including personalized support at every stage. The terms of payment are determined by the contract that you can sign in Xsolla Publisher Account.
+Xsolla offers the necessary tools to help you build and grow your gaming business, including personalized support at every stage. The terms of payment are determined by the contract that can be signed via Publisher Account.
+
+**The cost of using all Xsolla products is 5% of the amount you receive for the sale of the game and in-game goods via Xsolla Pay Station**. If you do not use Xsolla Pay Station in your application, but use other products, contact your Account Manager to clarify the terms and conditions.
 
 ---
 
